@@ -1,6 +1,10 @@
+.DS_Store
 *.pyc
 *~
-build
-dist
 *.egg-info
 *.in
+*.sublime-project
+*.sublime-workspace
+build
+dist
+venv
