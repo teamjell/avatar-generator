@@ -24,29 +24,27 @@ __all__ = ['Avatar']
 
 class Avatar(object):
     FONT_COLOR = (255, 255, 255)
-    MIN_RENDER_SIZE = 512
 
     @classmethod
-    def generate(cls, size, string, filetype="JPEG"):
+    def generate(cls, image_size, font_size, string, filetype="JPEG"):
         """
             Generates a squared avatar with random background color.
 
-            :param size: size of the avatar, in pixels
+            :param image_size: size of the avatar, in pixels
+            :param font_size: size of the text font, in points
             :param string: string to be used to print text and seed the random
             :param filetype: the file format of the image (i.e. JPEG, PNG)
         """
-        render_size = max(size, Avatar.MIN_RENDER_SIZE)
-        image = Image.new('RGB', (render_size, render_size),
+        image = Image.new('RGB', (image_size, image_size),
                           cls._background_color(string))
         draw = ImageDraw.Draw(image)
-        font = cls._font(render_size)
+        font = cls._font(font_size)
         text = cls._text(string)
-        draw.text(cls._text_position(render_size, text, font),
-                  text,
-                  fill=cls.FONT_COLOR,
-                  font=font)
+        draw.text(cls._text_position(image_size, text, font),
+            text,
+            fill=cls.FONT_COLOR,
+            font=font)
         stream = BytesIO()
-        image = image.resize((size, size), Image.ANTIALIAS)
         image.save(stream, format=filetype, optimize=True)
         return stream.getvalue()
 
@@ -75,8 +73,8 @@ class Avatar(object):
             :param size: size of the avatar, in pixels
         """
         path = os.path.join(os.path.dirname(__file__), 'data',
-                            "Inconsolata.otf")
-        return ImageFont.truetype(path, size=int(0.8 * size))
+            'Roboto-Regular.ttf')
+        return ImageFont.truetype(path, size=size)
 
     @staticmethod
     def _text(string):
@@ -86,15 +84,15 @@ class Avatar(object):
         if len(string) == 0:
             return "#"
         else:
-            return string[0].upper()
+            return string[0:2].upper()
 
     @staticmethod
     def _text_position(size, text, font):
         """
             Returns the left-top point where the text should be positioned.
         """
-        width, height = font.getsize(text)
-        left = (size - width) / 2.0
-        # I just don't know why 5.5, but it seems to be the good ratio
-        top = (size - height) / 5.5
+        text_width, text_height = font.getsize(text)
+        offset_left, offset_top = font.getoffset(text)
+        left = (size - text_width)  / 2.0 - offset_left
+        top  = (size - text_height) / 2.0 - offset_top
         return left, top
