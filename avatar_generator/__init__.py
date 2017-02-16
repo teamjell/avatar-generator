@@ -26,20 +26,19 @@ class Avatar(object):
     FONT_COLOR = (255, 255, 255)
 
     @classmethod
-    def generate(cls, image_size, font_size, string, filetype="JPEG"):
+    def generate(cls, image_size, font_size, text, filetype="JPEG"):
         """
             Generates a squared avatar with random background color.
 
             :param image_size: size of the avatar, in pixels
             :param font_size: size of the text font, in points
-            :param string: string to be used to print text and seed the random
+            :param text: string to be used to print text and seed the random
             :param filetype: the file format of the image (i.e. JPEG, PNG)
         """
         image = Image.new('RGB', (image_size, image_size),
-                          cls._background_color(string))
+            cls._background_color(text))
         draw = ImageDraw.Draw(image)
         font = cls._font(font_size)
-        text = cls._text(string)
         draw.text(cls._text_position(image_size, text, font),
             text,
             fill=cls.FONT_COLOR,
@@ -75,16 +74,6 @@ class Avatar(object):
         path = os.path.join(os.path.dirname(__file__), 'data',
             'Roboto-Regular.ttf')
         return ImageFont.truetype(path, size=size)
-
-    @staticmethod
-    def _text(string):
-        """
-            Returns the text to draw.
-        """
-        if len(string) == 0:
-            return "#"
-        else:
-            return string[0:2].upper()
 
     @staticmethod
     def _text_position(size, text, font):
